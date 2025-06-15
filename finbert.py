@@ -5,12 +5,33 @@ from transformers import pipeline
 from bs4 import BeautifulSoup
 import os
 import json
+import transformers
 
+
+
+def download_model():
+    from huggingface_hub import snapshot_download
+
+    # ✅ Correct: Download from Hugging Face Hub
+    snapshot_download(repo_id="yiyanghkust/finbert-tone", local_dir="finbert_model")
 
 def test():
-    finbert = BertForSequenceClassification.from_pretrained('yiyanghkust/finbert-tone',num_labels=3)
-    tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
+    #finbert = BertForSequenceClassification.from_pretrained('yiyanghkust/finbert-tone',num_labels=3)
+    #tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
 
+    #nlp = pipeline("sentiment-analysis", model=finbert, tokenizer=tokenizer)
+
+    model_path = "./finbert_model"
+
+    # Save the model and tokenizer
+    #finbert.save_pretrained(save_directory)
+    #tokenizer.save_pretrained(save_directory)
+
+    # Load the model and tokenizer from local directory
+    finbert = BertForSequenceClassification.from_pretrained(model_path)
+    tokenizer = BertTokenizer.from_pretrained(model_path)
+
+    # Create the pipeline
     nlp = pipeline("sentiment-analysis", model=finbert, tokenizer=tokenizer)
 
     sentences = ["there is a shortage of capital, and we need extra financing",  
@@ -30,12 +51,24 @@ def analyze_text_with_finbert(text_list):
     return results
 
 def process_json_file(input_json_path):
-    finbert = BertForSequenceClassification.from_pretrained('yiyanghkust/finbert-tone', num_labels=3)
+    """finbert = BertForSequenceClassification.from_pretrained('yiyanghkust/finbert-tone', num_labels=3)
     tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
     
     # Create sentiment analysis pipeline
     nlp = pipeline("sentiment-analysis", model=finbert, tokenizer=tokenizer)
 
+    model_path = "./finbert_model"
+
+    # Save the model and tokenizer
+    finbert.save_pretrained(save_directory)
+    tokenizer.save_pretrained(save_directory)"""
+
+    #transformers.utils.offline_mode(True)
+
+    model_path = "./finbert_model"
+    finbert = BertForSequenceClassification.from_pretrained(model_path)
+    tokenizer = BertTokenizer.from_pretrained(model_path)
+    nlp = pipeline("sentiment-analysis", model=finbert, tokenizer=tokenizer)
     # Read the input JSON file
     with open(input_json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -82,9 +115,10 @@ def process_json_file(input_json_path):
         else:
             print(file_path)
 if __name__ == "__main__":
-
+    print(os.environ['TRANSFORMERS_OFFLINE'])
     
     input_json_path = "extracted_texts.json"
+    #download_model()
     process_json_file(input_json_path)
 
 

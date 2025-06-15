@@ -10,17 +10,19 @@ def extract_text_from_html(file_path):
         soup = BeautifulSoup(file, "html.parser")
 
     # Find the main content div
-    content_div = soup.find("div", id="content")
-    if not content_div:
-        content_div = soup
+    #content_div = soup.find("div", id="content")
+    #if not content_div:
+    #    content_div = soup
+
 
     # Remove unwanted elements like <img>, <hr>, <div class="footer">, etc.
-    for tag in content_div.find_all(['img', 'hr', 'script', 'style', 'div']):
-        tag.decompose()
+    #for tag in content_div.find_all(['img', 'hr', 'script', 'style', 'div','p']):
+    #    tag.decompose()
+
 
     # Extract and clean text
-    text = content_div.get_text(separator="\n", strip=True)
-
+    #text = content_div.get_text(separator="\n", strip=True)
+    text = soup.get_text(separator="\n", strip=True)
     return text
 
 def extract_text_from_pdf(file_path):
